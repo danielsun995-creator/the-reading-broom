@@ -2,6 +2,7 @@ import { products as fallbackProducts } from '@/lib/data'
 import { createServerClient } from '@/lib/supabase/server'
 import { notFound } from 'next/navigation'
 import Link from 'next/link'
+import Image from 'next/image'
 import AddToCartButton from './AddToCartButton'
 import type { Product } from '@/lib/data'
 
@@ -12,10 +13,13 @@ async function getProduct(id: string): Promise<Product | null> {
     if (!data) return fallbackProducts.find((p) => p.id === id) ?? null
     return {
       id: data.id, name: data.name, category: data.category, price: data.price,
+      promotionalPrice: data.promotional_price ?? undefined,
       emoji: data.emoji ?? '📦', description: data.description ?? '',
+      imageUrl: data.image_url ?? undefined,
       tag: data.tag ?? undefined, items: data.items ?? undefined,
       author: data.author ?? undefined, publisher: data.publisher ?? undefined,
       isNew: data.is_new ?? false, isPopular: data.is_popular ?? false,
+      stock: data.stock ?? 99,
     }
   } catch {
     return fallbackProducts.find((p) => p.id === id) ?? null
@@ -75,10 +79,19 @@ export default async function ProductoPage({ params }: { params: Promise<{ id: s
       <div className="grid md:grid-cols-2 gap-8 mb-12">
         {/* Image */}
         <div
-          className="rounded-2xl flex items-center justify-center text-9xl shadow-sm"
-          style={{ height: '360px', background: '#F5F1E8', border: '2px solid #E5D5C0' }}
+          className="rounded-2xl overflow-hidden shadow-sm relative"
+          style={{ height: '400px', background: '#F5F1E8', border: '2px solid #E5D5C0' }}
         >
-          {product.emoji}
+          {product.imageUrl ? (
+            <Image src={product.imageUrl} alt={product.name} fill className="object-cover" sizes="(max-width: 768px) 100vw, 50vw" priority />
+          ) : (
+            <div className="w-full h-full flex items-center justify-center text-9xl">{product.emoji}</div>
+          )}
+          {product.stock !== undefined && product.stock <= 0 && (
+            <div className="absolute inset-0 bg-white/60 flex items-center justify-center">
+              <span className="text-lg font-bold px-4 py-2 rounded-full bg-white shadow" style={{ color: '#C9302C' }}>Sin stock</span>
+            </div>
+          )}
         </div>
 
         {/* Info */}
@@ -103,9 +116,17 @@ export default async function ProductoPage({ params }: { params: Promise<{ id: s
             </p>
           )}
 
-          <p className="text-3xl font-bold mb-4" style={{ color: '#C9302C' }}>
-            ${product.price.toLocaleString()} <span className="text-base font-normal" style={{ color: '#999' }}>MXN</span>
-          </p>
+          <div className="flex items-baseline gap-3 mb-4 flex-wrap">
+            <span className="text-3xl font-bold" style={{ color: '#C9302C' }}>
+              ${(product.promotionalPrice ?? product.price).toLocaleString()}
+              <span className="text-base font-normal ml-1" style={{ color: '#999' }}>MXN</span>
+            </span>
+            {product.promotionalPrice && (
+              <span className="text-xl line-through" style={{ color: '#bbb' }}>
+                ${product.price.toLocaleString()}
+              </span>
+            )}
+          </div>
 
           <p className="text-sm leading-relaxed mb-5" style={{ color: '#555' }}>
             {product.description}

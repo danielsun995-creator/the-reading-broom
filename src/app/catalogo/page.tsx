@@ -19,14 +19,17 @@ async function getProducts(): Promise<Product[]> {
       name: row.name,
       category: row.category,
       price: row.price,
+      promotionalPrice: row.promotional_price ?? undefined,
       emoji: row.emoji ?? '📦',
       description: row.description ?? '',
+      imageUrl: row.image_url ?? undefined,
       tag: row.tag ?? undefined,
       items: row.items ?? undefined,
       author: row.author ?? undefined,
       publisher: row.publisher ?? undefined,
       isNew: row.is_new ?? false,
       isPopular: row.is_popular ?? false,
+      stock: row.stock ?? 99,
     }))
   } catch {
     return fallbackProducts

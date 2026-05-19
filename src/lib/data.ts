@@ -5,14 +5,17 @@ export interface Product {
   name: string
   category: ProductCategory
   price: number
+  promotionalPrice?: number
   emoji: string
   description: string
+  imageUrl?: string
   tag?: string
   items?: string[]
   author?: string
   publisher?: string
   isNew?: boolean
   isPopular?: boolean
+  stock?: number
 }
 
 export interface KitItem {
