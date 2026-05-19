@@ -1,0 +1,130 @@
+import { products } from '@/lib/data'
+import { notFound } from 'next/navigation'
+import Link from 'next/link'
+import AddToCartButton from './AddToCartButton'
+
+export function generateStaticParams() {
+  return products.map((p) => ({ id: p.id }))
+}
+
+export async function generateMetadata({ params }: { params: Promise<{ id: string }> }) {
+  const { id } = await params
+  const product = products.find((p) => p.id === id)
+  if (!product) return {}
+  return {
+    title: `${product.name} — The Reading Broom`,
+    description: product.description,
+  }
+}
+
+export default async function ProductoPage({ params }: { params: Promise<{ id: string }> }) {
+  const { id } = await params
+  const product = products.find((p) => p.id === id)
+  if (!product) notFound()
+
+  const related = products
+    .filter((p) => p.category === product.category && p.id !== product.id)
+    .slice(0, 3)
+
+  return (
+    <>
+      {/* Breadcrumb */}
+      <nav className="flex items-center gap-2 text-sm mb-6" style={{ color: '#B89060' }}>
+        <Link href="/" className="hover:underline">Inicio</Link>
+        <span>/</span>
+        <Link href="/catalogo" className="hover:underline">Catálogo</Link>
+        <span>/</span>
+        <span style={{ color: '#5C3D2E' }}>{product.name}</span>
+      </nav>
+
+      {/* Main product */}
+      <div className="grid md:grid-cols-2 gap-8 mb-12">
+        {/* Image */}
+        <div
+          className="rounded-2xl flex items-center justify-center text-9xl shadow-sm"
+          style={{ height: '360px', background: '#F5F1E8', border: '2px solid #E5D5C0' }}
+        >
+          {product.emoji}
+        </div>
+
+        {/* Info */}
+        <div className="flex flex-col justify-center">
+          {product.tag && (
+            <span
+              className="inline-block text-xs font-bold uppercase tracking-wider px-3 py-1 rounded-full mb-3 w-fit"
+              style={{ background: '#F5F1E8', color: '#8B6F47' }}
+            >
+              {product.tag}
+            </span>
+          )}
+
+          <h1 className="text-3xl font-bold mb-2" style={{ color: '#3E2C20', fontFamily: 'Georgia, serif' }}>
+            {product.name}
+          </h1>
+
+          {product.author && (
+            <p className="text-sm mb-3" style={{ color: '#999' }}>
+              por <span className="font-medium" style={{ color: '#666' }}>{product.author}</span>
+              {product.publisher && ` · ${product.publisher}`}
+            </p>
+          )}
+
+          <p className="text-3xl font-bold mb-4" style={{ color: '#C9302C' }}>
+            ${product.price.toLocaleString()} <span className="text-base font-normal" style={{ color: '#999' }}>MXN</span>
+          </p>
+
+          <p className="text-sm leading-relaxed mb-5" style={{ color: '#555' }}>
+            {product.description}
+          </p>
+
+          {product.items && product.items.length > 0 && (
+            <div className="mb-5">
+              <h3 className="text-sm font-bold mb-2 pb-2 border-b" style={{ color: '#5C3D2E', borderColor: '#E5D5C0' }}>
+                Incluye:
+              </h3>
+              <ul className="space-y-1.5">
+                {product.items.map((item) => (
+                  <li key={item} className="flex items-start gap-2 text-sm" style={{ color: '#555' }}>
+                    <span style={{ color: '#8B6F47' }}>✓</span> {item}
+                  </li>
+                ))}
+              </ul>
+            </div>
+          )}
+
+          <AddToCartButton product={product} />
+
+          {/* Shipping note */}
+          <p className="text-xs mt-4 text-center" style={{ color: '#B89060' }}>
+            🚚 Envío a toda la República Mexicana · Procesamos en 2-5 días hábiles
+          </p>
+        </div>
+      </div>
+
+      {/* Related products */}
+      {related.length > 0 && (
+        <div>
+          <h2 className="text-xl font-bold mb-4" style={{ color: '#5C3D2E', fontFamily: 'Georgia, serif' }}>
+            También te puede gustar
+          </h2>
+          <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
+            {related.map((p) => (
+              <Link
+                key={p.id}
+                href={`/producto/${p.id}`}
+                className="flex items-center gap-3 p-4 rounded-xl border hover:shadow-md transition"
+                style={{ background: 'white', borderColor: '#E5D5C0' }}
+              >
+                <span className="text-4xl">{p.emoji}</span>
+                <div>
+                  <p className="text-sm font-semibold" style={{ color: '#5C3D2E' }}>{p.name}</p>
+                  <p className="text-sm font-bold" style={{ color: '#C9302C' }}>${p.price.toLocaleString()}</p>
+                </div>
+              </Link>
+            ))}
+          </div>
+        </div>
+      )}
+    </>
+  )
+}
