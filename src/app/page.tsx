@@ -3,33 +3,71 @@ import ProductCard from '@/components/ProductCard'
 import Testimonials from '@/components/Testimonials'
 import Newsletter from '@/components/Newsletter'
 import Link from 'next/link'
-import { products, categories } from '@/lib/data'
+import { categories } from '@/lib/data'
+import { createServerClient } from '@/lib/supabase/server'
+import type { Product } from '@/lib/data'
 
-const newProducts = products.filter((p) => p.isNew)
-const popularProducts = products.filter((p) => p.isPopular)
+async function getProducts(): Promise<Product[]> {
+  try {
+    const supabase = createServerClient()
+    const { data } = await supabase
+      .from('products')
+      .select('*')
+      .eq('active', true)
+      .order('created_at', { ascending: false })
 
-export default function Home() {
+    if (!data || data.length === 0) return []
+
+    return data.map((row) => ({
+      id: row.id,
+      name: row.name,
+      category: row.category,
+      price: row.price,
+      promotionalPrice: row.promotional_price ?? undefined,
+      emoji: row.emoji ?? '📦',
+      description: row.description ?? '',
+      imageUrl: row.image_url ?? undefined,
+      tag: row.tag ?? undefined,
+      items: row.items ?? undefined,
+      author: row.author ?? undefined,
+      publisher: row.publisher ?? undefined,
+      isNew: row.is_new ?? false,
+      isPopular: row.is_popular ?? false,
+      stock: row.stock ?? 99,
+    }))
+  } catch {
+    return []
+  }
+}
+
+export default async function Home() {
+  const allProducts = await getProducts()
+  const newProducts = allProducts.filter((p) => p.isNew)
+  const popularProducts = allProducts.filter((p) => p.isPopular)
+
   return (
     <>
       {/* Hero */}
       <HeroSlider />
 
       {/* Nuevos Títulos */}
-      <section className="mb-10">
-        <div className="flex items-center justify-between mb-4">
-          <h2 className="text-xl font-bold" style={{ color: '#5C3D2E', fontFamily: 'Georgia, serif' }}>
-            🆕 Nuevos Títulos
-          </h2>
-          <Link href="/catalogo" className="text-sm font-medium hover:underline" style={{ color: '#8B6F47' }}>
-            Ver todo →
-          </Link>
-        </div>
-        <div className="flex gap-4 overflow-x-auto no-scrollbar pb-3">
-          {newProducts.map((product) => (
-            <ProductCard key={product.id} product={product} compact />
-          ))}
-        </div>
-      </section>
+      {newProducts.length > 0 && (
+        <section className="mb-10">
+          <div className="flex items-center justify-between mb-4">
+            <h2 className="text-xl font-bold" style={{ color: '#5C3D2E', fontFamily: 'Georgia, serif' }}>
+              🆕 Nuevos Títulos
+            </h2>
+            <Link href="/catalogo" className="text-sm font-medium hover:underline" style={{ color: '#8B6F47' }}>
+              Ver todo →
+            </Link>
+          </div>
+          <div className="flex gap-4 overflow-x-auto no-scrollbar pb-3">
+            {newProducts.map((product) => (
+              <ProductCard key={product.id} product={product} compact />
+            ))}
+          </div>
+        </section>
+      )}
 
       {/* Testimonios */}
       <Testimonials />
@@ -40,7 +78,7 @@ export default function Home() {
           📂 Explora por Categoría
         </h2>
         <p className="text-center text-sm mb-6" style={{ color: '#999' }}>
-          Encuentra el kit perfecto para cada ocasión
+          Encuentra el libro perfecto para cada ocasión
         </p>
         <div className="grid grid-cols-2 sm:grid-cols-3 gap-4">
           {categories.map((cat) => (
@@ -61,21 +99,23 @@ export default function Home() {
       </section>
 
       {/* Lo Más Popular */}
-      <section className="mb-10">
-        <div className="flex items-center justify-between mb-4">
-          <h2 className="text-xl font-bold" style={{ color: '#5C3D2E', fontFamily: 'Georgia, serif' }}>
-            ⭐ Lo Más Popular
-          </h2>
-          <Link href="/catalogo" className="text-sm font-medium hover:underline" style={{ color: '#8B6F47' }}>
-            Ver catálogo completo →
-          </Link>
-        </div>
-        <div className="flex gap-4 overflow-x-auto no-scrollbar pb-3">
-          {popularProducts.map((product) => (
-            <ProductCard key={product.id} product={product} compact />
-          ))}
-        </div>
-      </section>
+      {popularProducts.length > 0 && (
+        <section className="mb-10">
+          <div className="flex items-center justify-between mb-4">
+            <h2 className="text-xl font-bold" style={{ color: '#5C3D2E', fontFamily: 'Georgia, serif' }}>
+              ⭐ Lo Más Popular
+            </h2>
+            <Link href="/catalogo" className="text-sm font-medium hover:underline" style={{ color: '#8B6F47' }}>
+              Ver catálogo completo →
+            </Link>
+          </div>
+          <div className="flex gap-4 overflow-x-auto no-scrollbar pb-3">
+            {popularProducts.map((product) => (
+              <ProductCard key={product.id} product={product} compact />
+            ))}
+          </div>
+        </section>
+      )}
 
       {/* Brand Section */}
       <section
