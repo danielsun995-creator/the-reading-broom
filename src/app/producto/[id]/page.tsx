@@ -1,15 +1,51 @@
-import { products } from '@/lib/data'
+import { products as fallbackProducts } from '@/lib/data'
+import { createServerClient } from '@/lib/supabase/server'
 import { notFound } from 'next/navigation'
 import Link from 'next/link'
 import AddToCartButton from './AddToCartButton'
+import type { Product } from '@/lib/data'
+
+async function getProduct(id: string): Promise<Product | null> {
+  try {
+    const supabase = createServerClient()
+    const { data } = await supabase.from('products').select('*').eq('id', id).single()
+    if (!data) return fallbackProducts.find((p) => p.id === id) ?? null
+    return {
+      id: data.id, name: data.name, category: data.category, price: data.price,
+      emoji: data.emoji ?? '📦', description: data.description ?? '',
+      tag: data.tag ?? undefined, items: data.items ?? undefined,
+      author: data.author ?? undefined, publisher: data.publisher ?? undefined,
+      isNew: data.is_new ?? false, isPopular: data.is_popular ?? false,
+    }
+  } catch {
+    return fallbackProducts.find((p) => p.id === id) ?? null
+  }
+}
+
+async function getRelated(category: string, excludeId: string): Promise<Product[]> {
+  try {
+    const supabase = createServerClient()
+    const { data } = await supabase.from('products').select('*')
+      .eq('category', category).eq('active', true).neq('id', excludeId).limit(3)
+    if (!data || data.length === 0) {
+      return fallbackProducts.filter((p) => p.category === category && p.id !== excludeId).slice(0, 3)
+    }
+    return data.map((row) => ({
+      id: row.id, name: row.name, category: row.category, price: row.price,
+      emoji: row.emoji ?? '📦', description: row.description ?? '',
+    })) as Product[]
+  } catch {
+    return fallbackProducts.filter((p) => p.category === category && p.id !== excludeId).slice(0, 3)
+  }
+}
 
 export function generateStaticParams() {
-  return products.map((p) => ({ id: p.id }))
+  return fallbackProducts.map((p) => ({ id: p.id }))
 }
 
 export async function generateMetadata({ params }: { params: Promise<{ id: string }> }) {
   const { id } = await params
-  const product = products.find((p) => p.id === id)
+  const product = await getProduct(id)
   if (!product) return {}
   return {
     title: `${product.name} — The Reading Broom`,
@@ -19,12 +55,10 @@ export async function generateMetadata({ params }: { params: Promise<{ id: strin
 
 export default async function ProductoPage({ params }: { params: Promise<{ id: string }> }) {
   const { id } = await params
-  const product = products.find((p) => p.id === id)
+  const product = await getProduct(id)
   if (!product) notFound()
 
-  const related = products
-    .filter((p) => p.category === product.category && p.id !== product.id)
-    .slice(0, 3)
+  const related = await getRelated(product.category, id)
 
   return (
     <>
