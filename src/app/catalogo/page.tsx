@@ -24,12 +24,18 @@ async function getProducts(): Promise<Product[]> {
       description: row.description ?? '',
       imageUrl: row.image_url ?? undefined,
       tag: row.tag ?? undefined,
+      tags: Array.isArray(row.tags) ? row.tags : undefined,
       items: row.items ?? undefined,
       author: row.author ?? undefined,
       publisher: row.publisher ?? undefined,
       isNew: row.is_new ?? false,
       isPopular: row.is_popular ?? false,
       stock: row.stock ?? 99,
+      variants: row.variants
+        ? (row.variants as Array<{ id: string; name: string; stock: number; image_url?: string }>).map((v) => ({
+            id: v.id, name: v.name, stock: v.stock, imageUrl: v.image_url ?? undefined,
+          }))
+        : undefined,
     }))
   } catch {
     return fallbackProducts

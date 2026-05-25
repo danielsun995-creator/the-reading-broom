@@ -10,6 +10,7 @@ interface SideMenuProps {
 const navLinks = [
   { href: '/', label: 'Inicio', icon: '🏠' },
   { href: '/catalogo', label: 'Catálogo', icon: '🛍️' },
+  { href: '/crea-tu-kit', label: 'Crea tu Kit', icon: '🎁' },
   { href: '/club', label: 'Club de Lectura', icon: '📖' },
   { href: '/acerca', label: 'Acerca de Mí', icon: '✨' },
 ]

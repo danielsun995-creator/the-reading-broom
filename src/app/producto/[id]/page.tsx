@@ -4,6 +4,7 @@ import { notFound } from 'next/navigation'
 import Link from 'next/link'
 import Image from 'next/image'
 import AddToCartButton from './AddToCartButton'
+import ProductCard from '@/components/ProductCard'
 import type { Product } from '@/lib/data'
 
 async function getProduct(id: string): Promise<Product | null> {
@@ -20,6 +21,11 @@ async function getProduct(id: string): Promise<Product | null> {
       author: data.author ?? undefined, publisher: data.publisher ?? undefined,
       isNew: data.is_new ?? false, isPopular: data.is_popular ?? false,
       stock: data.stock ?? 99,
+      variants: data.variants
+        ? (data.variants as Array<{ id: string; name: string; stock: number; image_url?: string }>).map((v) => ({
+            id: v.id, name: v.name, stock: v.stock, imageUrl: v.image_url ?? undefined,
+          }))
+        : undefined,
     }
   } catch {
     return fallbackProducts.find((p) => p.id === id) ?? null
@@ -35,8 +41,23 @@ async function getRelated(category: string, excludeId: string): Promise<Product[
       return fallbackProducts.filter((p) => p.category === category && p.id !== excludeId).slice(0, 3)
     }
     return data.map((row) => ({
-      id: row.id, name: row.name, category: row.category, price: row.price,
-      emoji: row.emoji ?? '📦', description: row.description ?? '',
+      id: row.id,
+      name: row.name,
+      category: row.category,
+      price: row.price,
+      promotionalPrice: row.promotional_price ?? undefined,
+      emoji: row.emoji ?? '📦',
+      description: row.description ?? '',
+      imageUrl: row.image_url ?? undefined,
+      tag: row.tag ?? undefined,
+      stock: row.stock ?? 99,
+      isNew: row.is_new ?? false,
+      isPopular: row.is_popular ?? false,
+      variants: row.variants
+        ? (row.variants as Array<{ id: string; name: string; stock: number; image_url?: string }>).map((v) => ({
+            id: v.id, name: v.name, stock: v.stock, imageUrl: v.image_url ?? undefined,
+          }))
+        : undefined,
     })) as Product[]
   } catch {
     return fallbackProducts.filter((p) => p.category === category && p.id !== excludeId).slice(0, 3)
@@ -83,7 +104,7 @@ export default async function ProductoPage({ params }: { params: Promise<{ id: s
           style={{ height: '400px', background: '#F5F1E8', border: '2px solid #E5D5C0' }}
         >
           {product.imageUrl ? (
-            <Image src={product.imageUrl} alt={product.name} fill className="object-cover" sizes="(max-width: 768px) 100vw, 50vw" priority />
+            <Image src={product.imageUrl} alt={product.name} fill className="object-contain p-2" sizes="(max-width: 768px) 100vw, 50vw" priority />
           ) : (
             <div className="w-full h-full flex items-center justify-center text-9xl">{product.emoji}</div>
           )}
@@ -162,20 +183,9 @@ export default async function ProductoPage({ params }: { params: Promise<{ id: s
           <h2 className="text-xl font-bold mb-4" style={{ color: '#5C3D2E', fontFamily: 'Georgia, serif' }}>
             También te puede gustar
           </h2>
-          <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
+          <div className="grid grid-cols-1 sm:grid-cols-3 gap-5">
             {related.map((p) => (
-              <Link
-                key={p.id}
-                href={`/producto/${p.id}`}
-                className="flex items-center gap-3 p-4 rounded-xl border hover:shadow-md transition"
-                style={{ background: 'white', borderColor: '#E5D5C0' }}
-              >
-                <span className="text-4xl">{p.emoji}</span>
-                <div>
-                  <p className="text-sm font-semibold" style={{ color: '#5C3D2E' }}>{p.name}</p>
-                  <p className="text-sm font-bold" style={{ color: '#C9302C' }}>${p.price.toLocaleString()}</p>
-                </div>
-              </Link>
+              <ProductCard key={p.id} product={p} />
             ))}
           </div>
         </div>

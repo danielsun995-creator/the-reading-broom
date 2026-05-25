@@ -12,13 +12,15 @@ export default function Footer() {
           <p className="text-sm leading-relaxed mb-4" style={{ color: 'rgba(255,255,255,0.65)' }}>
             Kits de lectura hechos con amor. Transformamos cada historia en una experiencia completa.
           </p>
-          <div className="flex flex-wrap gap-2">
-            {['💳 Visa', '💳 MC', 'PayPal', 'Stripe'].map((m) => (
-              <span key={m} className="text-xs px-2 py-1 rounded" style={{ background: 'rgba(255,255,255,0.12)', color: 'white' }}>
-                {m}
-              </span>
-            ))}
-          </div>
+          <a
+            href="https://instagram.com/thereadingbroom"
+            target="_blank"
+            rel="noopener noreferrer"
+            className="text-sm hover:text-white transition-colors"
+            style={{ color: 'rgba(255,255,255,0.65)' }}
+          >
+            📸 @thereadingbroom
+          </a>
         </div>
 
         {/* Tienda */}
@@ -27,9 +29,9 @@ export default function Footer() {
           <div className="space-y-2">
             {[
               { href: '/catalogo', label: 'Catálogo Completo' },
-              { href: '/catalogo?categoria=kit', label: 'Kits de Lectura' },
-              { href: '/catalogo?categoria=libro', label: 'Libros' },
-              { href: '/catalogo?categoria=complemento', label: 'Complementos' },
+              { href: '/crea-tu-kit', label: 'Arma tu Kit' },
+              { href: '/club-de-lectura', label: 'Club de Lectura' },
+              { href: '/acerca', label: 'Acerca de Mí' },
             ].map((link) => (
               <Link key={link.href} href={link.href} className="block text-sm transition-colors hover:text-white" style={{ color: 'rgba(255,255,255,0.65)' }}>
                 {link.label}
@@ -43,11 +45,9 @@ export default function Footer() {
           <h4 className="font-bold mb-3 text-sm" style={{ color: '#D4AF8C' }}>Información</h4>
           <div className="space-y-2">
             {[
-              { href: '/acerca', label: 'Acerca de Mí' },
-              { href: '/club', label: 'Club de Lectura' },
-              { href: '/envios', label: 'Política de Envío' },
+              { href: '/envios',       label: 'Política de Envío' },
               { href: '/devoluciones', label: 'Devoluciones' },
-              { href: '/terminos', label: 'Términos y Condiciones' },
+              { href: '/terminos',     label: 'Términos y Condiciones' },
             ].map((link) => (
               <Link key={link.href} href={link.href} className="block text-sm transition-colors hover:text-white" style={{ color: 'rgba(255,255,255,0.65)' }}>
                 {link.label}
@@ -60,25 +60,16 @@ export default function Footer() {
         <div>
           <h4 className="font-bold mb-3 text-sm" style={{ color: '#D4AF8C' }}>Contacto</h4>
           <div className="space-y-2">
-            <a
-              href="https://instagram.com/thereadingbroom"
-              target="_blank"
-              rel="noopener noreferrer"
-              className="block text-sm hover:text-white transition-colors"
-              style={{ color: 'rgba(255,255,255,0.65)' }}
-            >
-              📸 @thereadingbroom
-            </a>
-            <a
-              href="mailto:contacto@thereadingbroom.com"
-              className="block text-sm hover:text-white transition-colors"
-              style={{ color: 'rgba(255,255,255,0.65)' }}
-            >
-              📧 contacto@thereadingbroom.com
-            </a>
-            <p className="text-xs mt-3" style={{ color: 'rgba(255,255,255,0.4)' }}>
-              Pedidos procesados en 2-5 días hábiles.
+            <p className="text-sm" style={{ color: 'rgba(255,255,255,0.65)' }}>
+              📞 +52 155 7413 9159
             </p>
+            <a
+              href="mailto:begorreyes@gmail.com"
+              className="block text-sm hover:text-white transition-colors"
+              style={{ color: 'rgba(255,255,255,0.65)' }}
+            >
+              ✉️ begorreyes@gmail.com
+            </a>
           </div>
         </div>
       </div>
@@ -93,9 +84,9 @@ export default function Footer() {
         </span>
         <div className="flex gap-4">
           {[
-            { href: '/privacidad', label: 'Privacidad' },
-            { href: '/terminos', label: 'Términos' },
-            { href: '/envios', label: 'Envíos' },
+            { href: '/terminos',     label: 'Términos' },
+            { href: '/envios',       label: 'Envíos' },
+            { href: '/devoluciones', label: 'Devoluciones' },
           ].map((link) => (
             <Link key={link.href} href={link.href} className="text-xs hover:text-white transition-colors" style={{ color: 'rgba(255,255,255,0.4)' }}>
               {link.label}

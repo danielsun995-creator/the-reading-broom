@@ -15,10 +15,12 @@
     "next": "16.2.6",
     "react": "19.2.4",
     "react-dom": "19.2.4",
+    "resend": "^6.12.3",
     "stripe": "^22.1.1",
     "zustand": "^5.0.13"
   },
   "devDependencies": {
+    "@netlify/functions": "^5.2.2",
     "@tailwindcss/postcss": "^4",
     "@types/node": "^20",
     "@types/react": "^19",

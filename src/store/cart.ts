@@ -2,12 +2,16 @@ import { create } from 'zustand'
 import { persist } from 'zustand/middleware'
 
 export interface CartItem {
-  id: string
+  id: string           // cart key — can be 'productId::variantId' for variant items
+  productId?: string   // real product id for orders (only when variant item)
   name: string
   price: number
   emoji: string
   quantity: number
+  imageUrl?: string
   kitConfig?: string[]
+  variantId?: string
+  variantName?: string
 }
 
 interface CartStore {
@@ -16,6 +20,7 @@ interface CartStore {
   addItem: (item: Omit<CartItem, 'quantity'>) => void
   removeItem: (id: string) => void
   updateQuantity: (id: string, quantity: number) => void
+  clearCart: () => void
   openCart: () => void
   closeCart: () => void
   toggleCart: () => void
@@ -42,6 +47,7 @@ export const useCartStore = create<CartStore>()(
         }),
       removeItem: (id) =>
         set((state) => ({ items: state.items.filter((i) => i.id !== id) })),
+      clearCart: () => set({ items: [], isOpen: false }),
       updateQuantity: (id, quantity) =>
         set((state) => ({
           items:

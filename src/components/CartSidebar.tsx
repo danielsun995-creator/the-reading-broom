@@ -1,18 +1,24 @@
 'use client'
 
+import { useState, useEffect } from 'react'
 import { useCartStore } from '@/store/cart'
 
-const FREE_SHIPPING_THRESHOLD = 1100
-
 export default function CartSidebar() {
+  const [mounted, setMounted] = useState(false)
   const { items, isOpen, closeCart, removeItem, updateQuantity, total, itemCount } = useCartStore()
   const subtotal = total()
-  const remaining = FREE_SHIPPING_THRESHOLD - subtotal
+
+  useEffect(() => setMounted(true), [])
+
+  const displayItems = mounted ? items : []
+  const displayCount = mounted ? itemCount() : 0
+  const displaySubtotal = mounted ? subtotal : 0
+  const displayOpen = mounted ? isOpen : false
 
   return (
     <>
       {/* Backdrop */}
-      {isOpen && (
+      {displayOpen && (
         <div
           className="fixed inset-0 z-40 bg-black/40"
           onClick={closeCart}
@@ -26,15 +32,15 @@ export default function CartSidebar() {
           width: '360px',
           maxWidth: '100vw',
           background: '#fff',
-          transform: isOpen ? 'translateX(0)' : 'translateX(100%)',
+          transform: displayOpen ? 'translateX(0)' : 'translateX(100%)',
         }}
       >
         {/* Header */}
         <div className="flex items-center justify-between px-5 py-4 border-b" style={{ borderColor: '#E5D5C0' }}>
           <span className="font-bold text-lg" style={{ color: '#8B6F47', fontFamily: 'Georgia, serif' }}>
             🛒 Tu Carrito
-            {itemCount() > 0 && (
-              <span className="ml-2 text-sm font-normal text-gray-500">({itemCount()} {itemCount() === 1 ? 'artículo' : 'artículos'})</span>
+            {displayCount > 0 && (
+              <span className="ml-2 text-sm font-normal text-gray-500">({displayCount} {displayCount === 1 ? 'artículo' : 'artículos'})</span>
             )}
           </span>
           <button
@@ -45,25 +51,15 @@ export default function CartSidebar() {
           </button>
         </div>
 
-        {/* Shipping banner */}
-        <div
-          className="mx-4 mt-3 px-3 py-2 rounded-lg text-sm text-center"
-          style={{ background: '#F5F1E8', color: '#6B5438' }}
-        >
-          {remaining > 0
-            ? `🚚 ¡Te faltan $${remaining.toFixed(0)} para envío gratis!`
-            : '🎉 ¡Tienes envío gratis!'}
-        </div>
-
         {/* Items */}
         <div className="flex-1 overflow-y-auto px-4 py-3 space-y-3">
-          {items.length === 0 ? (
+          {displayItems.length === 0 ? (
             <div className="text-center py-16 text-gray-400">
               <div className="text-5xl mb-4">🛒</div>
               <p>Tu carrito está vacío</p>
             </div>
           ) : (
-            items.map((item) => (
+            displayItems.map((item) => (
               <div key={item.id} className="flex items-center gap-3 p-3 rounded-xl border" style={{ borderColor: '#E5D5C0', background: '#FDFAF6' }}>
                 <span className="text-3xl">{item.emoji}</span>
                 <div className="flex-1 min-w-0">
@@ -99,19 +95,15 @@ export default function CartSidebar() {
         </div>
 
         {/* Summary & Checkout */}
-        {items.length > 0 && (
+        {displayItems.length > 0 && (
           <div className="px-4 py-4 border-t space-y-3" style={{ borderColor: '#E5D5C0' }}>
             <div className="flex justify-between text-sm text-gray-600">
               <span>Subtotal</span>
-              <span>${subtotal.toLocaleString()}</span>
-            </div>
-            <div className="flex justify-between text-sm text-gray-500">
-              <span>Envío</span>
-              <span>{subtotal >= FREE_SHIPPING_THRESHOLD ? '¡Gratis!' : 'Se calcula al pagar'}</span>
+              <span>${displaySubtotal.toLocaleString()}</span>
             </div>
             <div className="flex justify-between font-bold text-lg border-t pt-2" style={{ borderColor: '#E5D5C0', color: '#C9302C' }}>
               <span style={{ color: '#3E3E3E' }}>Total</span>
-              <span>${subtotal.toLocaleString()}</span>
+              <span>${displaySubtotal.toLocaleString()}</span>
             </div>
             <a
               href="/checkout"

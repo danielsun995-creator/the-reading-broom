@@ -1,5 +1,12 @@
 export type ProductCategory = 'kit' | 'libro' | 'complemento'
 
+export interface ProductVariant {
+  id: string
+  name: string
+  stock: number
+  imageUrl?: string
+}
+
 export interface Product {
   id: string
   name: string
@@ -15,7 +22,10 @@ export interface Product {
   publisher?: string
   isNew?: boolean
   isPopular?: boolean
+  isFeatured?: boolean
   stock?: number
+  tags?: string[]
+  variants?: ProductVariant[]
 }
 
 export interface KitItem {
