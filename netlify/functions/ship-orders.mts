@@ -33,6 +33,7 @@ export default async function () {
     .eq('status', 'paid')
     .is('tracking_number', null)
     .not('skydropx_rate_id', 'is', null)
+    .like('stripe_session_id', 'cs_live_%')  // ignorar órdenes de prueba
 
   if (error) { console.error('DB error:', error); return }
   if (!orders?.length) { console.log('No hay órdenes pendientes'); return }
