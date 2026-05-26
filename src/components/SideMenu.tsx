@@ -1,6 +1,7 @@
 'use client'
 
 import Link from 'next/link'
+import Image from 'next/image'
 
 interface SideMenuProps {
   isOpen: boolean
@@ -11,7 +12,7 @@ const navLinks = [
   { href: '/', label: 'Inicio', icon: '🏠' },
   { href: '/catalogo', label: 'Catálogo', icon: '🛍️' },
   { href: '/crea-tu-kit', label: 'Crea tu Kit', icon: '🎁' },
-  { href: '/club', label: 'Club de Lectura', icon: '📖' },
+  { href: '/club-de-lectura', label: 'Club de Lectura', icon: '📖' },
   { href: '/acerca', label: 'Acerca de Mí', icon: '✨' },
 ]
 
@@ -42,13 +43,18 @@ export default function SideMenu({ isOpen, onClose }: SideMenuProps) {
         }}
       >
         {/* Header */}
-        <div className="flex items-center justify-between px-5 py-4" style={{ background: '#8B6F47' }}>
-          <span className="text-white font-bold" style={{ fontFamily: 'Georgia, serif' }}>
-            📚 The Reading Broom
-          </span>
+        <div className="flex items-center justify-between px-5 py-3" style={{ background: '#3E2C20' }}>
+          <Image
+            src="/Logo_Nuevo_TRB.png"
+            alt="The Reading Broom"
+            width={140}
+            height={48}
+            style={{ objectFit: 'contain', height: '48px', width: 'auto' }}
+            priority
+          />
           <button
             onClick={onClose}
-            className="text-white/80 hover:text-white text-xl w-8 h-8 flex items-center justify-center"
+            className="text-white/70 hover:text-white text-xl w-8 h-8 flex items-center justify-center"
           >
             ✕
           </button>

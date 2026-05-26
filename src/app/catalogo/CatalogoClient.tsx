@@ -33,8 +33,16 @@ const subcategoryMap: Record<ProductCategory, { label: string; value: string }[]
   ],
 }
 
-export default function CatalogoClient({ products }: { products: Product[] }) {
-  const [activeFilters, setActiveFilters]       = useState<Set<ProductCategory>>(new Set())
+export default function CatalogoClient({
+  products,
+  initialCategory,
+}: {
+  products: Product[]
+  initialCategory?: string
+}) {
+  const [activeFilters, setActiveFilters] = useState<Set<ProductCategory>>(
+    initialCategory ? new Set([initialCategory as ProductCategory]) : new Set()
+  )
   const [activeSubFilters, setActiveSubFilters] = useState<Set<string>>(new Set())
   const [sort, setSort]   = useState<SortOption>('default')
   const [search, setSearch] = useState('')
