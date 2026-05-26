@@ -53,7 +53,7 @@ export async function POST(req: NextRequest) {
     const total    = subtotal + (shipping.cost ?? 0)
 
     // ── Line items de Stripe ──
-    const lineItems: Stripe.Checkout.SessionCreateParams.LineItem[] = items.map((item) => ({
+    const lineItems = items.map((item) => ({
       price_data: {
         currency: 'mxn',
         product_data: {
