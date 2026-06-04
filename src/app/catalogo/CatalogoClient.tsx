@@ -1,10 +1,12 @@
 'use client'
 
-import { useState, useMemo } from 'react'
+import { useState, useMemo, useEffect } from 'react'
 import ProductCard from '@/components/ProductCard'
 import type { Product, ProductCategory } from '@/lib/data'
 
 type SortOption = 'default' | 'price-asc' | 'price-desc' | 'name'
+
+const STORAGE_KEY = 'trb-catalog-state'
 
 const categoryLabels: Record<string, string> = {
   kit:         '📦 Kits',
@@ -36,23 +38,57 @@ const subcategoryMap: Record<ProductCategory, { label: string; value: string }[]
 export default function CatalogoClient({
   products,
   initialCategory,
+  initialSub,
+  initialOrden,
+  initialQ,
 }: {
   products: Product[]
   initialCategory?: string
+  initialSub?: string
+  initialOrden?: string
+  initialQ?: string
 }) {
-  const [activeFilters, setActiveFilters] = useState<Set<ProductCategory>>(
-    initialCategory ? new Set([initialCategory as ProductCategory]) : new Set()
+  const [activeFilters, setActiveFilters] = useState<Set<ProductCategory>>(() => {
+    if (!initialCategory) return new Set()
+    return new Set(initialCategory.split(',') as ProductCategory[])
+  })
+  const [activeSubFilters, setActiveSubFilters] = useState<Set<string>>(() =>
+    initialSub ? new Set(initialSub.split(',')) : new Set()
   )
-  const [activeSubFilters, setActiveSubFilters] = useState<Set<string>>(new Set())
-  const [sort, setSort]   = useState<SortOption>('default')
-  const [search, setSearch] = useState('')
+  const [sort, setSort]     = useState<SortOption>((initialOrden as SortOption) || 'default')
+  const [search, setSearch] = useState(initialQ || '')
+
+  // Al montar: si no hay params en la URL, restaura la última sesión del catálogo
+  useEffect(() => {
+    if (initialCategory || initialSub || initialOrden || initialQ) return
+    try {
+      const raw = sessionStorage.getItem(STORAGE_KEY)
+      if (!raw) return
+      const s = JSON.parse(raw)
+      if (s.filters?.length)  setActiveFilters(new Set(s.filters as ProductCategory[]))
+      if (s.sub?.length)      setActiveSubFilters(new Set(s.sub as string[]))
+      if (s.sort)             setSort(s.sort as SortOption)
+      if (s.search)           setSearch(s.search as string)
+    } catch {}
+  }, []) // solo al montar — los initialX son estables
+
+  // Guarda el estado en sessionStorage cada vez que cambia un filtro
+  useEffect(() => {
+    try {
+      sessionStorage.setItem(STORAGE_KEY, JSON.stringify({
+        filters: [...activeFilters],
+        sub:     [...activeSubFilters],
+        sort,
+        search,
+      }))
+    } catch {}
+  }, [activeFilters, activeSubFilters, sort, search])
 
   const toggleFilter = (cat: ProductCategory) => {
     setActiveFilters((prev) => {
       const next = new Set(prev)
       if (next.has(cat)) {
         next.delete(cat)
-        // Limpiar subcategorías de esta categoría
         const subValues = subcategoryMap[cat].map((s) => s.value)
         setActiveSubFilters((prevSub) => {
           const nextSub = new Set(prevSub)
@@ -78,6 +114,8 @@ export default function CatalogoClient({
     setActiveFilters(new Set())
     setActiveSubFilters(new Set())
     setSearch('')
+    setSort('default')
+    try { sessionStorage.removeItem(STORAGE_KEY) } catch {}
   }
 
   const filtered = useMemo(() => {
@@ -178,7 +216,7 @@ export default function CatalogoClient({
         )}
       </div>
 
-      {/* Subcategorías — aparecen debajo cuando hay una categoría activa */}
+      {/* Subcategorías */}
       {hasSubcategories && (
         <div className="mt-3 space-y-2">
           {(Object.keys(subcategoryMap) as ProductCategory[]).map((cat) => {

@@ -45,10 +45,10 @@ async function getProducts(): Promise<Product[]> {
 export default async function CatalogoPage({
   searchParams,
 }: {
-  searchParams: Promise<{ categoria?: string }>
+  searchParams: Promise<{ categoria?: string; sub?: string; orden?: string; q?: string }>
 }) {
   const products = await getProducts()
-  const { categoria } = await searchParams
+  const { categoria, sub, orden, q } = await searchParams
 
   return (
     <>
@@ -60,7 +60,13 @@ export default async function CatalogoPage({
           Todos nuestros productos
         </p>
       </div>
-      <CatalogoClient products={products} initialCategory={categoria} />
+      <CatalogoClient
+        products={products}
+        initialCategory={categoria}
+        initialSub={sub}
+        initialOrden={orden}
+        initialQ={q}
+      />
     </>
   )
 }

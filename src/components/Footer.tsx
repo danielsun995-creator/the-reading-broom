@@ -45,9 +45,10 @@ export default function Footer() {
           <h4 className="font-bold mb-3 text-sm" style={{ color: '#D4AF8C' }}>Información</h4>
           <div className="space-y-2">
             {[
-              { href: '/envios',       label: 'Política de Envío' },
-              { href: '/devoluciones', label: 'Devoluciones' },
-              { href: '/terminos',     label: 'Términos y Condiciones' },
+              { href: '/envios',            label: 'Política de Envío' },
+              { href: '/devoluciones',      label: 'Devoluciones' },
+              { href: '/terminos',          label: 'Términos y Condiciones' },
+              { href: '/aviso-privacidad',  label: 'Aviso de Privacidad' },
             ].map((link) => (
               <Link key={link.href} href={link.href} className="block text-sm transition-colors hover:text-white" style={{ color: 'rgba(255,255,255,0.65)' }}>
                 {link.label}
@@ -84,9 +85,10 @@ export default function Footer() {
         </span>
         <div className="flex gap-4">
           {[
-            { href: '/terminos',     label: 'Términos' },
-            { href: '/envios',       label: 'Envíos' },
-            { href: '/devoluciones', label: 'Devoluciones' },
+            { href: '/terminos',          label: 'Términos' },
+            { href: '/envios',            label: 'Envíos' },
+            { href: '/devoluciones',      label: 'Devoluciones' },
+            { href: '/aviso-privacidad',  label: 'Privacidad' },
           ].map((link) => (
             <Link key={link.href} href={link.href} className="text-xs hover:text-white transition-colors" style={{ color: 'rgba(255,255,255,0.4)' }}>
               {link.label}
