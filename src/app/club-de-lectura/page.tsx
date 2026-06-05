@@ -28,8 +28,8 @@ export default function ClubDeLecturaPage() {
         {/* Foto del libro del mes */}
         <div className="relative rounded-2xl overflow-hidden shadow-md" style={{ aspectRatio: '3/4' }}>
           <Image
-            src="/Club_Lectura_Mayo.png"
-            alt="La Sospecha de Sofía — Lectura del mes"
+            src="/Club_Lectura_Junio.jpeg"
+            alt="Victorian Psycho — Lectura del mes"
             fill
             className="object-cover"
             sizes="(max-width: 768px) 100vw, 50vw"
@@ -54,11 +54,11 @@ export default function ClubDeLecturaPage() {
               📖 Este mes estamos leyendo
             </p>
             <p className="text-lg font-bold leading-snug" style={{ color: '#3E2C20', fontFamily: 'Georgia, serif' }}>
-              La sospecha de Sofía
+              Victorian Psycho
             </p>
-            <p className="text-sm mb-2" style={{ color: '#8B6F47' }}>de Paloma Sánchez-Garnica</p>
+            <p className="text-sm mb-2" style={{ color: '#8B6F47' }}>de Virginia Feito</p>
             <p className="text-sm leading-relaxed" style={{ color: '#666' }}>
-              Una novela llena de misterio, emociones e historia que nos tiene completamente atrapados.
+              Inglaterra, 1888. Agnes llega como institutriz a la opulenta mansión de los Bellacourt con modales impecables y pensamientos que ninguna dama victoriana debería tener. Oscura, perturbadora y adictiva, esta novela mezcla el Gothic más clásico con un humor negro que no podrás soltar.
             </p>
           </div>
 
