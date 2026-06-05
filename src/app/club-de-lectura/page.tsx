@@ -28,7 +28,7 @@ export default function ClubDeLecturaPage() {
         {/* Foto del libro del mes */}
         <div className="relative rounded-2xl overflow-hidden shadow-md" style={{ aspectRatio: '3/4' }}>
           <Image
-            src="/Club_Lectura_Junio.jpeg"
+            src="/Club_Lectura_Junio.jpg"
             alt="Victorian Psycho — Lectura del mes"
             fill
             className="object-cover"
